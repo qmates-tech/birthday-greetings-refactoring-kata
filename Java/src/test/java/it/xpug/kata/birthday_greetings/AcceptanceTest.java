@@ -34,7 +34,7 @@ public class AcceptanceTest {
 		assertThat(mailServer.getReceivedMessages().length)
 			.as("message not sent?")
 			.isEqualTo(1);
-			
+
 		MimeMessage message = mailServer.getReceivedMessages()[0];
 		assertThat(GreenMailUtil.getBody(message))
 			.isEqualTo("Happy Birthday, dear John!");
@@ -54,4 +54,24 @@ public class AcceptanceTest {
 			.as("what? messages?")
 			.isZero();
 	}
+
+	@Test
+	public void willSendGreetingsToMultipleEmployees_whenItsSomebodysBirthday() throws Exception {
+		birthdayService.sendGreetings("employee_data.txt", new XDate("2026/12/05"), "localhost", NONSTANDARD_PORT);
+
+		MimeMessage[] sentMessages = mailServer.getReceivedMessages();
+		assertThat(sentMessages.length).as("message not sent?").isEqualTo(2);
+
+		MimeMessage message = sentMessages[0];
+		assertThat(GreenMailUtil.getBody(message)).isEqualTo("Happy Birthday, dear Robert!");
+		assertThat(message.getSubject()).isEqualTo("Happy Birthday!");
+		assertThat(message.getAllRecipients()).hasSize(1);
+		assertThat(message.getAllRecipients()[0].toString()).isEqualTo("unclebob@cleancode.com");
+		message = sentMessages[1];
+		assertThat(GreenMailUtil.getBody(message)).isEqualTo("Happy Birthday, dear Kent!");
+		assertThat(message.getSubject()).isEqualTo("Happy Birthday!");
+		assertThat(message.getAllRecipients()).hasSize(1);
+		assertThat(message.getAllRecipients()[0].toString()).isEqualTo("kent@xp.com");
+	}
+
 }
