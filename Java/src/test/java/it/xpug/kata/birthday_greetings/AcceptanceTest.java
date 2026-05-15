@@ -62,16 +62,18 @@ public class AcceptanceTest {
 		MimeMessage[] sentMessages = mailServer.getReceivedMessages();
 		assertThat(sentMessages.length).as("message not sent?").isEqualTo(2);
 
-		MimeMessage message = sentMessages[0];
-		assertThat(GreenMailUtil.getBody(message)).isEqualTo("Happy Birthday, dear Robert!");
-		assertThat(message.getSubject()).isEqualTo("Happy Birthday!");
-		assertThat(message.getAllRecipients()).hasSize(1);
-		assertThat(message.getAllRecipients()[0].toString()).isEqualTo("unclebob@cleancode.com");
-		message = sentMessages[1];
-		assertThat(GreenMailUtil.getBody(message)).isEqualTo("Happy Birthday, dear Kent!");
-		assertThat(message.getSubject()).isEqualTo("Happy Birthday!");
-		assertThat(message.getAllRecipients()).hasSize(1);
-		assertThat(message.getAllRecipients()[0].toString()).isEqualTo("kent@xp.com");
+		assertThat(sentMessages).anySatisfy(message -> {
+			assertThat(GreenMailUtil.getBody(message)).isEqualTo("Happy Birthday, dear Robert!");
+			assertThat(message.getSubject()).isEqualTo("Happy Birthday!");
+			assertThat(message.getAllRecipients()).hasSize(1);
+			assertThat(message.getAllRecipients()[0].toString()).isEqualTo("unclebob@cleancode.com");
+		});
+		assertThat(sentMessages).anySatisfy(message -> {
+			assertThat(GreenMailUtil.getBody(message)).isEqualTo("Happy Birthday, dear Kent!");
+			assertThat(message.getSubject()).isEqualTo("Happy Birthday!");
+			assertThat(message.getAllRecipients()).hasSize(1);
+			assertThat(message.getAllRecipients()[0].toString()).isEqualTo("kent@xp.com");
+		});
 	}
 
 }
