@@ -82,4 +82,16 @@ public class AcceptanceTest {
 		});
 	}
 
+	@Test
+	public void twentyNineOfFebruarySpecialTestCase() throws Exception {
+		birthdayService.sendGreetings("employee_data.txt", new XDate("2026/02/28"), "localhost", NONSTANDARD_PORT);
+		assertThat(mailServer.getReceivedMessages().length).as("what? messages?").isEqualTo(0);
+		birthdayService.sendGreetings("employee_data.txt", new XDate("2026/03/01"), "localhost", NONSTANDARD_PORT);
+		assertThat(mailServer.getReceivedMessages().length).as("what? messages?").isEqualTo(0);
+
+		birthdayService.sendGreetings("employee_data.txt", new XDate("2028/02/29"), "localhost", NONSTANDARD_PORT);
+		assertThat(mailServer.getReceivedMessages().length).as("message not sent?").isEqualTo(1);
+		assertThat(mailServer.getReceivedMessages()[0].getAllRecipients()[0].toString()).isEqualTo("leap@year.org");
+	}
+
 }
