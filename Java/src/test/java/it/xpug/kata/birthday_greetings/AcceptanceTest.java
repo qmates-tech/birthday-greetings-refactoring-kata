@@ -40,6 +40,10 @@ public class AcceptanceTest {
 			.isEqualTo("Happy Birthday, dear John!");
 		assertThat(message.getSubject())
 			.isEqualTo("Happy Birthday!");
+		assertThat(message.getFrom())
+			.hasSize(1);
+		assertThat(message.getFrom()[0].toString())
+			.isEqualTo("sender@here.com");
 		assertThat(message.getAllRecipients())
 			.hasSize(1);
 		assertThat(message.getAllRecipients()[0].toString())
@@ -65,6 +69,8 @@ public class AcceptanceTest {
 		assertThat(sentMessages).anySatisfy(message -> {
 			assertThat(GreenMailUtil.getBody(message)).isEqualTo("Happy Birthday, dear Robert!");
 			assertThat(message.getSubject()).isEqualTo("Happy Birthday!");
+			assertThat(message.getFrom()).hasSize(1);
+			assertThat(message.getFrom()[0].toString()).isEqualTo("sender@here.com");
 			assertThat(message.getAllRecipients()).hasSize(1);
 			assertThat(message.getAllRecipients()[0].toString()).isEqualTo("unclebob@cleancode.com");
 		});
