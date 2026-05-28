@@ -1,13 +1,17 @@
 package it.xpug.kata.birthday_greetings;
 
-import org.junit.jupiter.api.*;
-
-import static org.assertj.core.api.Assertions.*;
-
 import com.icegreen.greenmail.util.GreenMail;
-import com.icegreen.greenmail.util.ServerSetup;
 import com.icegreen.greenmail.util.GreenMailUtil;
+import com.icegreen.greenmail.util.ServerSetup;
 import jakarta.mail.internet.MimeMessage;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.io.FileNotFoundException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class AcceptanceTest {
 
@@ -92,6 +96,15 @@ public class AcceptanceTest {
 		birthdayService.sendGreetings("employee_data.txt", new XDate("2028/02/29"), "localhost", NONSTANDARD_PORT);
 		assertThat(mailServer.getReceivedMessages().length).as("message not sent?").isEqualTo(1);
 		assertThat(mailServer.getReceivedMessages()[0].getAllRecipients()[0].toString()).isEqualTo("leap@year.org");
+	}
+
+	@Test
+	public void willThrowAnException_whenLoadedWithAnUnexistingEmployeeFile() {
+		assertThatThrownBy(() ->
+			birthdayService.sendGreetings("unexisting_file.txt", new XDate("2026/05/28"), "localhost", NONSTANDARD_PORT)
+		)
+			.isExactlyInstanceOf(FileNotFoundException.class)
+			.hasMessage("unexisting_file.txt (No such file or directory)");
 	}
 
 }
