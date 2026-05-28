@@ -3,6 +3,7 @@ package it.xpug.kata.birthday_greetings;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetup;
+import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -105,6 +106,25 @@ public class AcceptanceTest {
 		)
 			.isExactlyInstanceOf(FileNotFoundException.class)
 			.hasMessage("unexisting_file.txt (No such file or directory)");
+	}
+
+	@Test
+	public void willThrowAnExceptionAndPartiallySendGreetings_whenLoadedWithAPartiallyBrokenEmployeeData() throws MessagingException {
+		assertThatThrownBy(() ->
+			birthdayService.sendGreetings("employee_partially_broken_data.txt", new XDate("2025/12/18"), "localhost", NONSTANDARD_PORT)
+		)
+			.isExactlyInstanceOf(ArrayIndexOutOfBoundsException.class)
+			.hasMessage("Index 3 out of bounds for length 3");
+
+		assertThat(mailServer.getReceivedMessages().length).as("message not sent?").isEqualTo(1);
+
+		MimeMessage message = mailServer.getReceivedMessages()[0];
+		assertThat(GreenMailUtil.getBody(message)).isEqualTo("Happy Birthday, dear Fowler!");
+		assertThat(message.getSubject()).isEqualTo("Happy Birthday!");
+		assertThat(message.getFrom()).hasSize(1);
+		assertThat(message.getFrom()[0].toString()).isEqualTo("sender@here.com");
+		assertThat(message.getAllRecipients()).hasSize(1);
+		assertThat(message.getAllRecipients()[0].toString()).isEqualTo("martin@fowler.org");
 	}
 
 }
