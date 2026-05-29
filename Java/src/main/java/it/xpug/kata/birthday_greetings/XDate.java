@@ -1,6 +1,5 @@
 package it.xpug.kata.birthday_greetings;
 
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
@@ -12,7 +11,7 @@ public record XDate(LocalDate date) {
 		this(LocalDate.now());
 	}
 
-	public XDate(String yyyyMMdd) throws ParseException {
+	public XDate(String yyyyMMdd) {
 		this(LocalDate.parse(yyyyMMdd, FORMATTER));
 	}
 

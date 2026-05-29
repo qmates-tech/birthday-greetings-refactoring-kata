@@ -1,7 +1,6 @@
 package it.xpug.kata.birthday_greetings;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.List;
 
 import it.xpug.kata.birthday_greetings.ports.EmployeeRepository;
@@ -21,7 +20,7 @@ public class BirthdayService {
 		this.employeeRepository = employeeRepository;
 	}
 
-	public void sendGreetings(XDate xDate, String smtpHost, int smtpPort) throws IOException, ParseException, MessagingException {
+	public void sendGreetings(XDate xDate, String smtpHost, int smtpPort) throws IOException, MessagingException {
 		List<Employee> employees = this.employeeRepository.getAll();
 		for (Employee employee : employees) {
 			if (employee.isBirthday(xDate)) {
