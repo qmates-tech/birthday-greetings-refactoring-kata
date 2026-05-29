@@ -3,13 +3,14 @@ package it.xpug.kata.birthday_greetings;
 import com.icegreen.greenmail.util.GreenMail;
 import com.icegreen.greenmail.util.GreenMailUtil;
 import com.icegreen.greenmail.util.ServerSetup;
+import it.xpug.kata.birthday_greetings.ports.FakeMailClient;
 import it.xpug.kata.birthday_greetings.ports.FileEmployeeRepository;
+import it.xpug.kata.birthday_greetings.ports.JakartaSmtpMailClient;
 import jakarta.mail.internet.MimeMessage;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.FileNotFoundException;
 import java.nio.file.NoSuchFileException;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -26,7 +27,8 @@ public class AcceptanceTest {
 		mailServer = new GreenMail(new ServerSetup(NONSTANDARD_PORT, null, ServerSetup.PROTOCOL_SMTP));
 		mailServer.start();
 		birthdayService = new BirthdayService(
-			new FileEmployeeRepository("employee_data.txt")
+			new FileEmployeeRepository("employee_data.txt"),
+			new JakartaSmtpMailClient("sender@here.com", "localhost", NONSTANDARD_PORT)
 		);
 	}
 
@@ -105,7 +107,8 @@ public class AcceptanceTest {
 	@Test
 	public void willThrowAnException_whenLoadedWithAnUnexistingEmployeeFile() {
 		BirthdayService birthdayServiceWithUnexistingEmployeeFile = new BirthdayService(
-			new FileEmployeeRepository("unexisting_file.txt")
+			new FileEmployeeRepository("unexisting_file.txt"),
+			new FakeMailClient()
 		);
 		assertThatThrownBy(() ->
 			birthdayServiceWithUnexistingEmployeeFile.sendGreetings(new XDate("2026/05/28"), "localhost", NONSTANDARD_PORT)
@@ -117,7 +120,8 @@ public class AcceptanceTest {
 	@Test
 	public void willThrowAnExceptionWithoutSendingEmails_whenLoadedWithAPartiallyBrokenEmployeeData() {
 		BirthdayService birthdayServiceWithPartiallyBrokenEmployeeFile = new BirthdayService(
-			new FileEmployeeRepository("employee_partially_broken_data.txt")
+			new FileEmployeeRepository("employee_partially_broken_data.txt"),
+			new FakeMailClient()
 		);
 		assertThatThrownBy(() ->
 			birthdayServiceWithPartiallyBrokenEmployeeFile.sendGreetings(new XDate("2025/12/18"), "localhost", NONSTANDARD_PORT)

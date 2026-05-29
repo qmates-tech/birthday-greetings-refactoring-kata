@@ -1,23 +1,20 @@
 package it.xpug.kata.birthday_greetings;
 
+import it.xpug.kata.birthday_greetings.ports.EmployeeRepository;
+import it.xpug.kata.birthday_greetings.ports.MailClient;
+import jakarta.mail.MessagingException;
+
 import java.io.IOException;
 import java.util.List;
-
-import it.xpug.kata.birthday_greetings.ports.EmployeeRepository;
-import jakarta.mail.Message;
-import jakarta.mail.MessagingException;
-import jakarta.mail.Session;
-import jakarta.mail.Transport;
-import jakarta.mail.internet.AddressException;
-import jakarta.mail.internet.InternetAddress;
-import jakarta.mail.internet.MimeMessage;
 
 public class BirthdayService {
 
 	private final EmployeeRepository employeeRepository;
+	private final MailClient mailClient;
 
-	public BirthdayService(EmployeeRepository employeeRepository) {
+	public BirthdayService(EmployeeRepository employeeRepository, MailClient mailClient) {
 		this.employeeRepository = employeeRepository;
+		this.mailClient = mailClient;
 	}
 
 	public void sendGreetings(XDate xDate, String smtpHost, int smtpPort) throws IOException, MessagingException {
@@ -27,26 +24,9 @@ public class BirthdayService {
 				String recipient = employee.getEmail();
 				String body = "Happy Birthday, dear %NAME%!".replace("%NAME%", employee.getFirstName());
 				String subject = "Happy Birthday!";
-				sendMessage(smtpHost, smtpPort, "sender@here.com", subject, body, recipient);
+				mailClient.sendMessage(subject, body, recipient);
 			}
 		}
 	}
 
-	private void sendMessage(String smtpHost, int smtpPort, String sender, String subject, String body, String recipient) throws AddressException, MessagingException {
-		// Create a mail session
-		java.util.Properties props = new java.util.Properties();
-		props.put("mail.smtp.host", smtpHost);
-		props.put("mail.smtp.port", "" + smtpPort);
-		Session session = Session.getInstance(props, null);
-
-		// Construct the message
-		Message msg = new MimeMessage(session);
-		msg.setFrom(new InternetAddress(sender));
-		msg.setRecipient(Message.RecipientType.TO, new InternetAddress(recipient));
-		msg.setSubject(subject);
-		msg.setText(body);
-
-		// Send the message
-		Transport.send(msg);
-	}
 }
