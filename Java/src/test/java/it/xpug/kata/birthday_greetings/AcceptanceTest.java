@@ -10,6 +10,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
+import java.nio.file.NoSuchFileException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -109,8 +110,8 @@ public class AcceptanceTest {
 		assertThatThrownBy(() ->
 			birthdayServiceWithUnexistingEmployeeFile.sendGreetings(new XDate("2026/05/28"), "localhost", NONSTANDARD_PORT)
 		)
-			.isExactlyInstanceOf(FileNotFoundException.class)
-			.hasMessage("unexisting_file.txt (No such file or directory)");
+			.isExactlyInstanceOf(NoSuchFileException.class)
+			.hasMessage("unexisting_file.txt");
 	}
 
 	@Test

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.NoSuchFileException;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.format.DateTimeParseException;
@@ -82,8 +83,8 @@ class FileEmployeeRepositoryIntegrationTest {
 		//noinspection Convert2MethodRef
 		assertThatThrownBy(() -> repository.getAll())
 			.isInstanceOf(IOException.class)
-			.isExactlyInstanceOf(FileNotFoundException.class)
-			.hasMessage("unexisting_file.txt (No such file or directory)");
+			.isExactlyInstanceOf(NoSuchFileException.class)
+			.hasMessage("unexisting_file.txt");
 	}
 
 }
