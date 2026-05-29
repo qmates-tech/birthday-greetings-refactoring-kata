@@ -23,7 +23,7 @@ public class AcceptanceTest {
 	private GreenMail mailServer;
 
 	@BeforeEach
-	public void setUp() throws Exception {
+	public void setUp() {
 		mailServer = new GreenMail(new ServerSetup(NONSTANDARD_PORT, null, ServerSetup.PROTOCOL_SMTP));
 		mailServer.start();
 		birthdayService = new BirthdayService(
@@ -33,13 +33,13 @@ public class AcceptanceTest {
 	}
 
 	@AfterEach
-	public void tearDown() throws Exception {
+	public void tearDown() {
 		mailServer.stop();
 	}
 
 	@Test
 	public void willSendGreetings_whenItsSomebodysBirthday() throws Exception {
-		birthdayService.sendGreetings(new XDate("2008/10/08"), "localhost", NONSTANDARD_PORT);
+		birthdayService.sendGreetings(new XDate("2008/10/08"));
 
 		assertThat(mailServer.getReceivedMessages().length)
 			.as("message not sent?")
@@ -62,7 +62,7 @@ public class AcceptanceTest {
 
 	@Test
 	public void willNotSendEmailsWhenNobodysBirthday() throws Exception {
-		birthdayService.sendGreetings(new XDate("2008/01/01"), "localhost", NONSTANDARD_PORT);
+		birthdayService.sendGreetings(new XDate("2008/01/01"));
 
 		assertThat(mailServer.getReceivedMessages().length)
 			.as("what? messages?")
@@ -71,7 +71,7 @@ public class AcceptanceTest {
 
 	@Test
 	public void willSendGreetingsToMultipleEmployees_whenItsSomebodysBirthday() throws Exception {
-		birthdayService.sendGreetings(new XDate("2026/12/05"), "localhost", NONSTANDARD_PORT);
+		birthdayService.sendGreetings(new XDate("2026/12/05"));
 
 		MimeMessage[] sentMessages = mailServer.getReceivedMessages();
 		assertThat(sentMessages.length).as("message not sent?").isEqualTo(2);
@@ -99,7 +99,7 @@ public class AcceptanceTest {
 			new FakeMailClient()
 		);
 		assertThatThrownBy(() ->
-			birthdayServiceWithUnexistingEmployeeFile.sendGreetings(new XDate("2026/05/28"), "localhost", NONSTANDARD_PORT)
+			birthdayServiceWithUnexistingEmployeeFile.sendGreetings(new XDate("2026/05/28"))
 		)
 			.isExactlyInstanceOf(NoSuchFileException.class)
 			.hasMessage("unexisting_file.txt");
@@ -112,7 +112,7 @@ public class AcceptanceTest {
 			new FakeMailClient()
 		);
 		assertThatThrownBy(() ->
-			birthdayServiceWithPartiallyBrokenEmployeeFile.sendGreetings(new XDate("2025/12/18"), "localhost", NONSTANDARD_PORT)
+			birthdayServiceWithPartiallyBrokenEmployeeFile.sendGreetings(new XDate("2025/12/18"))
 		)
 			.isExactlyInstanceOf(ArrayIndexOutOfBoundsException.class)
 			.hasMessage("Index 3 out of bounds for length 3");

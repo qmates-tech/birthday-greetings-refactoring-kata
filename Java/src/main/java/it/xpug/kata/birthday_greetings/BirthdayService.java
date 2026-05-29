@@ -17,15 +17,17 @@ public class BirthdayService {
 		this.mailClient = mailClient;
 	}
 
-	public void sendGreetings(XDate xDate, String smtpHost, int smtpPort) throws IOException, MessagingException {
+	public void sendGreetings(XDate todayDate) throws IOException, MessagingException {
 		List<Employee> employees = this.employeeRepository.getAll();
 		for (Employee employee : employees) {
-			if (employee.isBirthday(xDate)) {
-				String recipient = employee.getEmail();
-				String body = "Happy Birthday, dear %NAME%!".replace("%NAME%", employee.getFirstName());
-				String subject = "Happy Birthday!";
-				mailClient.sendMessage(subject, body, recipient);
-			}
+			if (!employee.isBirthday(todayDate))
+				continue;
+
+			mailClient.sendMessage(
+				"Happy Birthday!",
+				"Happy Birthday, dear %NAME%!".replace("%NAME%", employee.getFirstName()),
+				employee.getEmail()
+			);
 		}
 	}
 
