@@ -77,4 +77,25 @@ class BirthdayServiceTest {
 		);
 	}
 
+	@Test
+	public void twentyNineOfFebruarySpecialTestCase() throws Exception {
+		when(employeeRepository.getAll()).thenReturn(List.of(
+			new Employee("John", "Doe", "1982/10/08", "john.doe@foobar.com"),
+			new Employee("Leap", "Year", "1992/02/29", "leap@year.org")
+		));
+
+		birthdayService.sendGreetings(new XDate("2026/02/28"), "any", -1);
+		verify(mailClient, never()).sendMessage(any(), any(), any());
+
+		birthdayService.sendGreetings(new XDate("2026/03/01"), "any", -1);
+		verify(mailClient, never()).sendMessage(any(), any(), any());
+
+		birthdayService.sendGreetings(new XDate("2028/02/29"), "any", -1);
+		verify(mailClient, times(1)).sendMessage(
+			"Happy Birthday!",
+			"Happy Birthday, dear Leap!",
+			"leap@year.org"
+		);
+	}
+
 }
