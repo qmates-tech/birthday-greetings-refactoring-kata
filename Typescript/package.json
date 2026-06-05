@@ -1,0 +1,29 @@
+{
+  "name": "birthday-greetings",
+  "version": "1.0.0",
+  "description": "Birthday Greetings Kata - TypeScript Version",
+  "private": true,
+  "engines": {
+    "node": ">=20.10.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "start": "tsx src/Main.ts"
+  },
+  "dependencies": {
+    "nodemailer": "^6.9.13"
+  },
+  "devDependencies": {
+    "@types/mailparser": "^3.4.4",
+    "@types/node": "^20.10.0",
+    "@types/nodemailer": "^6.4.14",
+    "@types/smtp-server": "^3.5.10",
+    "mailparser": "^3.6.6",
+    "smtp-server": "^3.13.4",
+    "tsx": "^4.7.0",
+    "typescript": "^5.3.3",
+    "vitest": "^3.2.3"
+  }
+}
