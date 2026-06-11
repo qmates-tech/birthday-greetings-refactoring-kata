@@ -2,6 +2,7 @@ package it.xpug.kata.birthday_greetings;
 
 import it.xpug.kata.birthday_greetings.ports.EmployeeRepository;
 import it.xpug.kata.birthday_greetings.ports.MailClient;
+import it.xpug.kata.birthday_greetings.ports.XCalendar;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -13,13 +14,14 @@ class BirthdayServiceTest {
 
 	private final EmployeeRepository employeeRepository = mock(EmployeeRepository.class);
 	private final MailClient mailClient = mock(MailClient.class);
-	private final BirthdayService birthdayService = new BirthdayService(employeeRepository, mailClient);
+	private final XCalendar calendar = mock(XCalendar.class);
+	private final BirthdayService birthdayService = new BirthdayService(employeeRepository, mailClient, calendar);
 
 	@Test
 	void zeroEmployees_noGreetings() throws Exception {
 		when(employeeRepository.getAll()).thenReturn(emptyList());
 
-		birthdayService.sendGreetings(new XDate("2026/06/04"));
+		birthdayService.sendGreetings();
 
 		verify(mailClient, never()).sendMessage(any(), any(), any());
 	}
@@ -30,8 +32,9 @@ class BirthdayServiceTest {
 			new Employee("Kent", "Beck", "1961/06/05", "kent@xp.com"),
 			new Employee("Robert", "Martin", "1952/12/05", "unclebob@cleancode.com")
 		));
+		when(calendar.today()).thenReturn(new XDate("2026/06/04"));
 
-		birthdayService.sendGreetings(new XDate("2026/06/04"));
+		birthdayService.sendGreetings();
 
 		verify(mailClient, never()).sendMessage(any(), any(), any());
 	}
@@ -43,8 +46,9 @@ class BirthdayServiceTest {
 			new Employee("John", "Doe", "1982/10/08", "john.doe@foobar.com"),
 			new Employee("Robert", "Martin", "1952/12/05", "unclebob@cleancode.com")
 		));
+		when(calendar.today()).thenReturn(new XDate("2026/03/11"));
 
-		birthdayService.sendGreetings(new XDate("2026/03/11"));
+		birthdayService.sendGreetings();
 
 		verify(mailClient, times(1)).sendMessage(any(), any(), any());
 		verify(mailClient, times(1)).sendMessage(
@@ -61,8 +65,9 @@ class BirthdayServiceTest {
 			new Employee("John", "Doe", "1982/10/08", "john.doe@foobar.com"),
 			new Employee("Kent", "Beck", "1961/12/05", "kent@xp.com")
 		));
+		when(calendar.today()).thenReturn(new XDate("2026/12/05"));
 
-		birthdayService.sendGreetings(new XDate("2026/12/05"));
+		birthdayService.sendGreetings();
 
 		verify(mailClient, times(2)).sendMessage(any(), any(), any());
 		verify(mailClient, times(1)).sendMessage(
@@ -84,13 +89,16 @@ class BirthdayServiceTest {
 			new Employee("Leap", "Year", "1992/02/29", "leap@year.org")
 		));
 
-		birthdayService.sendGreetings(new XDate("2026/02/28"));
+		when(calendar.today()).thenReturn(new XDate("2026/02/28"));
+		birthdayService.sendGreetings();
 		verify(mailClient, never()).sendMessage(any(), any(), any());
 
-		birthdayService.sendGreetings(new XDate("2026/03/01"));
+		when(calendar.today()).thenReturn(new XDate("2026/03/01"));
+		birthdayService.sendGreetings();
 		verify(mailClient, never()).sendMessage(any(), any(), any());
 
-		birthdayService.sendGreetings(new XDate("2028/02/29"));
+		when(calendar.today()).thenReturn(new XDate("2028/02/29"));
+		birthdayService.sendGreetings();
 		verify(mailClient, times(1)).sendMessage(
 			"Happy Birthday!",
 			"Happy Birthday, dear Leap!",
